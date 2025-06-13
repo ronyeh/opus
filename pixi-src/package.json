@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "build": "npm run lint && tsc && vite build --outDir ../pixi/ --emptyOutDir",
+    "build": "npm run lint && tsc && vite --base=/pixi/ build --outDir ../pixi/ --emptyOutDir",
     "lint": "eslint .",
     "dev": "vite"
   },
