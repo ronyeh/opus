@@ -3,60 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Guitar Example</title>
+    <title>Karplus-Strong Guitar Synth</title>
   </head>
   <body>
-    <h1>Guitar Example</h1>
-    <button id="playButton">Play Tone</button>
-    <p>This page is hosted at: https://op.us.com/tone-guitar/</p>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <h1>Karplus-Strong Guitar Synth</h1>
+    <button id="playButton">Play Middle C</button>
+    <p>
+      Click the button to play a single note (Middle C) synthesized using the
+      Karplus-Strong algorithm with Tone.js.
+    </p>
+    <script src="http://unpkg.com/tone"></script>
     <script>
-      // 1. Create a new Tone.js Synth
-      const synth = new Tone.Synth().toDestination();
-      // Set the release time for the envelope
-      synth.envelope.release = 0.2;
+      // Create a new Tone.PluckSynth, which is a Karplus-Strong model
+      const synth = new Tone.PluckSynth({
+        dampening: 5000, // Higher value allows more high frequencies, less dampening
+        resonance: 0.98, // Very high resonance for a long decay
+      }).toDestination();
 
-      // 2. Get a reference to the button
+      // Get a reference to the button
       const playButton = document.getElementById("playButton");
 
-      // 3. Add an event listener to the button
+      // Add an event listener to the button
       playButton.addEventListener("click", async () => {
-        // 4a. Call Tone.start()
+        // Start the audio context on user gesture, as required by browsers
         await Tone.start();
         console.log("AudioContext started");
 
-        // 4b. Use the synth to trigger an attack and release
-        // The note "C4" will play for a duration of an 8th note ("8n")
-        // The attack velocity is 1 (maximum)
-        synth.triggerAttackRelease("C4", "8n", Tone.now());
-        // The note will sustain for 0.8 seconds, and then release over 0.2 seconds (as set by synth.envelope.release)
-        // This explicit triggerRelease is not strictly necessary if triggerAttackRelease's duration parameter
-        // and the synth's release envelope are set correctly.
-        // However, to ensure the 0.8s sustain and 0.2s release, we can schedule it.
-        // For simplicity matching the prompt: triggerAttackRelease handles the duration.
-        // The prompt mentions "After 0.8 seconds, trigger a release that lasts 0.2 seconds".
-        // triggerAttackRelease("C4", "8n") will play C4 for the duration of an 8th note.
-        // If we want exactly 0.8s duration and then 0.2s release:
-        // synth.triggerAttack("C4", Tone.now());
-        // synth.triggerRelease(Tone.now() + 0.8);
-        // For this case, let's use triggerAttackRelease with a duration that approximates 0.8s
-        // or stick to the simpler "8n" and rely on the envelope.
-        // Let's use the simpler triggerAttackRelease with "8n" as it's common.
-        // The prompt's "After 0.8 seconds, trigger a release that lasts 0.2 seconds"
-        // is best achieved by setting the synth's envelope and using triggerAttackRelease with a duration.
-        // Let's assume "8n" is close enough to 0.8s for this example, or adjust if specific timing is critical.
-        // A more precise way for 0.8s duration before release starts:
-        // synth.triggerAttack("C4", Tone.now());
-        // synth.triggerRelease(Tone.now() + 0.8);
-        // Given the prompt "The note should sustain for 0.8 seconds." and then "trigger a release that lasts 0.2 seconds"
-        // this implies an explicit control over sustain.
-        // So, attack now, release after 0.8s. The release phase itself will take 0.2s.
-
-        // Corrected approach for explicit 0.8s sustain:
-        synth.triggerAttack("C4", Tone.now());
-        synth.triggerRelease(Tone.now() + 0.8); // Release starts after 0.8 seconds
-        // and will last for synth.envelope.release (0.2s)
-        console.log("Tone played");
+        // Trigger the synth to play Middle C ("C4").
+        // Using triggerAttack allows the note to ring out and decay naturally.
+        synth.triggerAttack("C3", Tone.now());
       });
     </script>
   </body>
