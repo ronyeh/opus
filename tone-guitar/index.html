@@ -12,45 +12,46 @@
       <input type="checkbox" id="consistentSound" />
       <label for="consistentSound">Use Consistent Sound</label>
     </div>
-    <p>
-      Click the button to play an open C major chord.
-    </p>
+    <p>Click the button to play an open C major chord.</p>
     <script src="https://unpkg.com/tone"></script>
     <script>
       // Chord notes for C Major (x32010)
       const chordNotes = ["C3", "E3", "G3", "C4", "E4"];
 
       // Implementation 1: An array of PluckSynths for polyphony (randomized pluck)
-      const pluckSynths = chordNotes.map(() => new Tone.PluckSynth({
-        dampening: 5000,
-        resonance: 0.98,
-      }).toDestination());
+      const pluckSynths = chordNotes.map(() =>
+        new Tone.PluckSynth({
+          dampening: 600, // what is this... a low pass filter?
+          resonance: 0.984, // Range: [0, 1]. The higher, the longer it plays. 1 is infinite.
+          release: 2,
+        }).toDestination()
+      );
 
       // Implementation 2: A deterministic synth that sounds like a pluck
       const consistentSynth = new Tone.PolySynth(Tone.FMSynth, {
-        "harmonicity": 3.01,
-        "modulationIndex": 14,
-        "envelope": {
-          "attack": 0.01,
-          "decay": 2,
-          "sustain": 0.1,
-          "release": 2
+        harmonicity: 3.01,
+        modulationIndex: 14,
+        envelope: {
+          attack: 0.01,
+          decay: 2,
+          sustain: 0.1,
+          release: 2,
         },
-        "modulation" : {
-          "type" : "square"
+        modulation: {
+          type: "square",
         },
-        "modulationEnvelope" : {
-          "attack": 0.01,
-          "decay": 0.5,
-          "sustain": 0.2,
-          "release": 0.5
-        }
+        modulationEnvelope: {
+          attack: 0.01,
+          decay: 0.5,
+          sustain: 0.2,
+          release: 0.5,
+        },
       }).toDestination();
-
 
       // UI Elements
       const playButton = document.getElementById("playButton");
-      const consistentSoundCheckbox = document.getElementById("consistentSound");
+      const consistentSoundCheckbox =
+        document.getElementById("consistentSound");
 
       // Event Listener
       playButton.addEventListener("click", async () => {
