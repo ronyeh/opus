@@ -4,13 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Guitar Chord Synth</title>
+    <style>
+      #consistentSound {
+        /* currently hidden */
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <h1>Guitar Chord Synth</h1>
     <button id="playButton">Play Open C Major Chord</button>
     <div>
       <input type="checkbox" id="consistentSound" />
-      <label for="consistentSound">Use Consistent Sound</label>
     </div>
     <p>Click the button to play an open C major chord.</p>
     <script src="https://unpkg.com/tone"></script>
