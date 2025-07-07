@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Guitar Chord Synth</title>
+    <title>Guitar</title>
     <style>
       body {
         color: white;
@@ -12,15 +12,13 @@
         /* currently hidden */
         display: none;
       }
-      #background {
+      #background-video {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("background.jpg");
-        background-size: cover;
-        background-position: center;
+        object-fit: cover;
         z-index: -1;
       }
       #content {
@@ -33,9 +31,11 @@
     </style>
   </head>
   <body>
-    <div id="background"></div>
+    <video autoplay loop muted id="background-video">
+      <source src="strum.mp4" type="video/mp4" />
+    </video>
     <div id="content">
-      <h1>Guitar Chord Synth</h1>
+      <h1>LLisa</h1>
       <button id="playButton">Play</button>
       <div>
         <input type="checkbox" id="consistentSound" />
