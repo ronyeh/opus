@@ -3,35 +3,68 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Karplus-Strong Guitar Synth</title>
+    <title>Guitar Synth</title>
   </head>
   <body>
-    <h1>Karplus-Strong Guitar Synth</h1>
+    <h1>Guitar Synth</h1>
     <button id="playButton">Play Middle C</button>
+    <div>
+      <input type="checkbox" id="consistentSound" />
+      <label for="consistentSound">Use Consistent Sound</label>
+    </div>
     <p>
-      Click the button to play a single note (Middle C) synthesized using the
+      Click the button to play a single note synthesized using the
       Karplus-Strong algorithm with Tone.js.
     </p>
     <script src="https://unpkg.com/tone"></script>
     <script>
-      // Create a new Tone.PluckSynth, which is a Karplus-Strong model
-      const synth = new Tone.PluckSynth({
-        dampening: 5000, // Higher value allows more high frequencies, less dampening
-        resonance: 0.98, // Very high resonance for a long decay
+      // Implementation 1: PluckSynth (randomized pluck)
+      const pluckSynth = new Tone.PluckSynth({
+        dampening: 5000,
+        resonance: 0.98,
       }).toDestination();
 
-      // Get a reference to the button
-      const playButton = document.getElementById("playButton");
+      // Implementation 2: A deterministic synth that sounds like a pluck
+      const consistentSynth = new Tone.PolySynth(Tone.FMSynth, {
+        "harmonicity": 3.01,
+        "modulationIndex": 14,
+        "envelope": {
+          "attack": 0.01,
+          "decay": 2,
+          "sustain": 0.1,
+          "release": 2
+        },
+        "modulation" : {
+          "type" : "square"
+        },
+        "modulationEnvelope" : {
+          "attack": 0.01,
+          "decay": 0.5,
+          "sustain": 0.2,
+          "release": 0.5
+        }
+      }).toDestination();
 
-      // Add an event listener to the button
+
+      // UI Elements
+      const playButton = document.getElementById("playButton");
+      const consistentSoundCheckbox = document.getElementById("consistentSound");
+
+      // Event Listener
       playButton.addEventListener("click", async () => {
-        // Start the audio context on user gesture, as required by browsers
         await Tone.start();
         console.log("AudioContext started");
 
-        // Trigger the synth to play Middle C ("C4").
-        // Using triggerAttack allows the note to ring out and decay naturally.
-        synth.triggerAttack("C3", Tone.now());
+        const note = "C3";
+        const time = Tone.now();
+
+        if (consistentSoundCheckbox.checked) {
+          console.log("Playing with consistent FMSynth");
+          consistentSynth.triggerAttackRelease(note, "2n", time);
+        } else {
+          console.log("Playing with randomized PluckSynth");
+          pluckSynth.triggerAttack(note, time);
+        }
       });
     </script>
   </body>
