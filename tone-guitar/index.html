@@ -5,26 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Guitar Chord Synth</title>
     <style>
+      body {
+        color: white;
+      }
       #consistentSound {
         /* currently hidden */
         display: none;
       }
+      #background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("background.jpg");
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+      }
+      #content {
+        position: relative;
+        z-index: 1;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        border-radius: 10px;
+      }
     </style>
   </head>
   <body>
-    <h1>Guitar Chord Synth</h1>
-    <button id="playButton">Play Open C Major Chord</button>
-    <div>
-      <input type="checkbox" id="consistentSound" />
+    <div id="background"></div>
+    <div id="content">
+      <h1>Guitar Chord Synth</h1>
+      <button id="playButton">Play</button>
+      <div>
+        <input type="checkbox" id="consistentSound" />
+      </div>
+      <p>Click the button to play the next chord in the progression.</p>
     </div>
-    <p>Click the button to play an open C major chord.</p>
     <script src="https://unpkg.com/tone"></script>
     <script>
-      // Chord notes for C Major (x32010)
-      const chordNotes = ["C3", "E3", "G3", "C4", "E4"];
+      // Chord progressions
+      const chords = [
+        { name: "C", notes: ["C3", "E3", "G3", "C4", "E4"] },
+        { name: "Am", notes: ["A2", "E3", "A3", "C4", "E4"] },
+        { name: "G", notes: ["G2", "B2", "D3", "G3", "B3", "G4"] },
+        { name: "F", notes: ["F2", "A2", "C3", "F3", "A3", "F4"] },
+      ];
+      let chordIndex = 0;
 
       // Implementation 1: An array of PluckSynths for polyphony (randomized pluck)
-      const pluckSynths = chordNotes.map(() =>
+      const pluckSynths = Array.from({ length: 6 }, () =>
         new Tone.PluckSynth({
           dampening: 600, // what is this... a low pass filter?
           resonance: 0.984, // Range: [0, 1]. The higher, the longer it plays. 1 is infinite.
@@ -64,17 +94,26 @@
         console.log("AudioContext started");
 
         const time = Tone.now();
+        const chord = chords[chordIndex];
 
         if (consistentSoundCheckbox.checked) {
-          console.log("Playing C Major with consistent FMSynth");
-          consistentSynth.triggerAttackRelease(chordNotes, "2n", time);
+          console.log(`Playing ${chord.name} with consistent FMSynth`);
+          consistentSynth.triggerAttackRelease(chord.notes, "2n", time);
         } else {
-          console.log("Playing C Major with randomized PluckSynth array");
+          console.log(`Playing ${chord.name} with randomized PluckSynth array`);
+          const notes = chord.notes;
           pluckSynths.forEach((synth, index) => {
-            synth.triggerAttack(chordNotes[index], time);
+            if (notes[index]) {
+              synth.triggerAttack(notes[index], time);
+            }
           });
         }
+
+        chordIndex = (chordIndex + 1) % chords.length;
+        playButton.innerText = `Play ${chords[chordIndex].name}`;
       });
+
+      playButton.innerText = `Play ${chords[chordIndex].name}`;
     </script>
   </body>
 </html>
