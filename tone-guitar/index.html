@@ -3,26 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Guitar Synth</title>
+    <title>Guitar Chord Synth</title>
   </head>
   <body>
-    <h1>Guitar Synth</h1>
-    <button id="playButton">Play Middle C</button>
+    <h1>Guitar Chord Synth</h1>
+    <button id="playButton">Play Open C Major Chord</button>
     <div>
       <input type="checkbox" id="consistentSound" />
       <label for="consistentSound">Use Consistent Sound</label>
     </div>
     <p>
-      Click the button to play a single note synthesized using the
-      Karplus-Strong algorithm with Tone.js.
+      Click the button to play an open C major chord.
     </p>
     <script src="https://unpkg.com/tone"></script>
     <script>
-      // Implementation 1: PluckSynth (randomized pluck)
-      const pluckSynth = new Tone.PluckSynth({
+      // Chord notes for C Major (x32010)
+      const chordNotes = ["C3", "E3", "G3", "C4", "E4"];
+
+      // Implementation 1: An array of PluckSynths for polyphony (randomized pluck)
+      const pluckSynths = chordNotes.map(() => new Tone.PluckSynth({
         dampening: 5000,
         resonance: 0.98,
-      }).toDestination();
+      }).toDestination());
 
       // Implementation 2: A deterministic synth that sounds like a pluck
       const consistentSynth = new Tone.PolySynth(Tone.FMSynth, {
@@ -55,15 +57,16 @@
         await Tone.start();
         console.log("AudioContext started");
 
-        const note = "C3";
         const time = Tone.now();
 
         if (consistentSoundCheckbox.checked) {
-          console.log("Playing with consistent FMSynth");
-          consistentSynth.triggerAttackRelease(note, "2n", time);
+          console.log("Playing C Major with consistent FMSynth");
+          consistentSynth.triggerAttackRelease(chordNotes, "2n", time);
         } else {
-          console.log("Playing with randomized PluckSynth");
-          pluckSynth.triggerAttack(note, time);
+          console.log("Playing C Major with randomized PluckSynth array");
+          pluckSynths.forEach((synth, index) => {
+            synth.triggerAttack(chordNotes[index], time);
+          });
         }
       });
     </script>
